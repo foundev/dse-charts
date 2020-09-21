@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "cstress-dse.fullname" . }}
+  namespace: {{ .Values.stress.namespace }}
+  app.kubernetes.io/name: {{ include "cstress-dse.name" . }}
+  helm.sh/chart: {{ include "cstress-dse.chart" . }}
+  app.kubernetes.io/instance: {{ .Release.Name }}
+  app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        volumeMounts:
+          - mountPath: /etc/config
+            name: {{ include "cstress-dse.fullname" . }}
+        command: ["/opt/dse/resources/cassandra/tools/bin/cassandra-stress"]
+        args: ["user", "profile=file:///etc/config/stress.yaml", {{ .Values.stress.ops | quote }}, "n={{ .Values.stress.records }}", "-node", "{{- range $i, $e := .Values.stress.contactpods  }}
+        {{ $e }}.{{ $.Values.stress.contactservice }}.{{ $.Values.namespace }}.svc.cluster.local{{- if (lt ( add1 $i ) (len $.Values.stress.contactpods ))}},{{- end }}
+        {{- end }}" ]
+        resources:
+          requests:
+            memory: {{ .Values.resources.mem | quote }}
+            cpu:  {{ .Values.resources.cpu| quote }}
+          limits:
+            memory: {{ .Values.resources.mem | quote }}
+            cpu:  {{ .Values.resources.cpu| quote }}
+      volumes:
+        - name: {{ include "cstress-dse.fullname" . }}
+          configMap:
+            name: {{ include "cstress-dse.fullname" . }}
+            items:
+              - key: stress.yaml
+                path: stress.yaml
+      restartPolicy: Never
+  backoffLimit: 4

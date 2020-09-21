@@ -1,0 +1,11 @@
+# Only create this for K8s 1.9+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: {{ .Values.storageclass.name }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "{{ .Values.storageclass.is_default }}"
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+# Supported policies: Delete, Retain
+reclaimPolicy: {{ .Values.storageclass.reclaim_policy }}

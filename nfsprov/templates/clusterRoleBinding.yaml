@@ -1,0 +1,13 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: run-{{ include "nfsprov.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "nfsprov.fullname" . }} 
+     # replace with namespace where provisioner is deployed
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "nfsprov.fullname" . }}-runner
+  apiGroup: rbac.authorization.k8s.io

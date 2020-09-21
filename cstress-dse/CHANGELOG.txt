@@ -1,0 +1,11 @@
+cassandra-stress
+================
+
+0.2.0
+=====
+* can easily add custom stress file
+* easier usage with k8s
+
+0.1.0
+=====
+* initial release

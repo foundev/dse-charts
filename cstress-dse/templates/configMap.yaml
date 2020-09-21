@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cstress-dse.fullname" . }}
+  namespace: {{ .Values.namespace | quote }}
+  labels:
+    app.kubernetes.io/name: {{ include "cstress-dse.name" . }}
+    helm.sh/chart: {{ include "cstress-dse.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  stress.yaml: |
+{{ .Values.stress.stressYaml | indent 4 }}

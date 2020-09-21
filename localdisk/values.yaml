@@ -1,0 +1,20 @@
+storageclass:
+  name: fast-disks
+  is_default: "true"
+  reclaim_policy: Delete
+namespace: default
+configmap:
+  name: local-provisioner-config
+  hostDir: /mnt/
+  mountDir: /mnt/
+  fsType: ext4
+provisioner:
+  name: local-volume-provisioner
+  image: "quay.io/external_storage/local-volume-provisioner:v2.2.0"
+serviceAccount:
+  name: local-storage-admin
+clusterRoleBinding:
+  name: local-storage-provisioner-pv-binding
+clusterRole:
+  name: system:persistent-volume-provisioner
+  fullname: local-storage-provisioner-node-clusterrole

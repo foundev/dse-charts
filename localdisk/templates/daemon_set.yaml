@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.provisioner.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.provisioner.name }}
+    heritage: "Tiller"
+    release: "RELEASE-NAME"
+    chart: provisioner-2.3.0
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.provisioner.name }} 
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.provisioner.name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      containers:
+        - image: {{ .Values.provisioner.image }}
+          name: provisioner
+          securityContext:
+            privileged: true
+          env:
+          - name: MY_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: JOB_CONTAINER_IMAGE
+            value: {{ .Values.provisioner.image }}
+          volumeMounts:
+            - mountPath: /etc/provisioner/config
+              name: provisioner-config
+              readOnly: true
+            - mountPath: /dev
+              name: provisioner-dev
+            - mountPath: {{ .Values.configmap.mountDir }}
+              name: {{ .Values.storageclass.name }}
+              mountPropagation: "HostToContainer"
+      volumes:
+        - name: provisioner-config
+          configMap:
+            name: {{ .Values.configmap.name }}
+        - name: provisioner-dev
+          hostPath:
+            path: /dev
+        - name: {{ .Values.storageclass.name }}
+          hostPath:
+            path: {{ .Values.configmap.hostDir }}

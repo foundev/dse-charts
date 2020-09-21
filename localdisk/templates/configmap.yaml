@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    heritage: "Tiller"
+    release: "RELEASE-NAME"
+    chart: provisioner-2.3.0
+data:
+  storageClassMap: |
+    fast-disks:
+       hostDir: {{ .Values.configmap.hostDir }}
+       mountDir: {{ .Values.configmap.mountDir }}
+       blockCleanerCommand:
+         - "/scripts/shred.sh"
+         - "2"
+       volumeMode: Filesystem
+       fsType: {{ .Values.configmap.fsType }}
+
