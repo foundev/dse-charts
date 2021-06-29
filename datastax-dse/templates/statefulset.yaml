@@ -77,12 +77,17 @@ spec:
           set -ex
           ls -la /mnt/
           #Copy appropriate cassandra conf files from config-map to emptyDir.
+          echo "listing all config maps and their contents"
+          ls -la /mnt/config-map-cass/
+          ls -la /mnt/config-map-dse/
+          ls -la /mnt/config-map-spark/
+          echo "trying to mount config maps"
           cp /mnt/config-map-cass/* /mnt/cassandra-conf/
           ls -la /mnt/cassandra-conf/
           # Copy appropriate dse conf files from config-map to emptyDir.
           cp /mnt/config-map-dse/* /mnt/dse-conf/
           ls -la /mnt/dse-conf/
-          # Copy appropriate spark conf files from config-map to emptyDir.
+          # Copy appropriate spark conf files from config-map to emptyDir
           cp /mnt/config-map-spark/* /mnt/spark-conf/
           ls -la /mnt/spark-conf/
           # poke in configuration that the docker image doesn't handle

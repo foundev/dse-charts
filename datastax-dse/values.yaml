@@ -4,7 +4,7 @@
 
 image:
   repository: datastax/dse-server
-  tag: 6.0.5
+  tag: 6.8.12
   pullPolicy: IfNotPresent
   # -g for graph -s for solr -k for analytics
   # example helm install . --set image.args={-k,-s} for a search analytics node
@@ -38,8 +38,10 @@ cassandra:
   inter_dc_stream_throughput_outbound_megabits_per_sec: 200
   phi_convict_threshold: 8
   jvm:
-    heap_size: "8G"
+    heap_size: "4G"
     extra: ""
+    #to disable backpressure do the following
+    #extra: "-Ddse.tpc.disable_backpressure=true"
   tpc_cores: 4
 
 dse:
@@ -64,8 +66,8 @@ storage:
     size: 10Gi
 
 resources:
-  cpu: 4000m 
-  mem: 12Gi 
+  cpu: 2000m 
+  mem: 6Gi 
 
 nodeSelector: {}
 
